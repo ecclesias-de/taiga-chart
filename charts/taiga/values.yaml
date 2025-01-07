@@ -1,0 +1,167 @@
+async:
+  deployment:
+    replicas: 2
+    resources:
+      request:
+        memory: 350Mi
+        cpu: 50m
+      limits:
+        memory: 350Mi
+
+backend:
+  deployment:
+    image:
+      repository: taigaio/taiga-back
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    replicas: 2
+    resources:
+      request:
+        memory: 400Mi
+        cpu: 100m
+      limits:
+        memory: 400Mi
+  hooks:
+    migrate:
+      enabled: true
+      resources:
+        request:
+          memory: 1Gi
+          cpu: 1
+        limits:
+          memory: 1Gi
+    
+events:
+  deployment:
+    image:
+      repository: taigaio/taiga-events
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    replicas: 2
+    resources:
+      request:
+        memory: 100Mi
+        cpu: 50m
+      limits:
+        memory: 100Mi
+    
+front:
+  deployment:
+    image:
+      repository: taigaio/taiga-front
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    replicas: 2
+    resources:
+      request:
+        memory: 50Mi
+        cpu: 50m
+      limits:
+        memory: 50Mi
+    
+protected:
+  deployment:
+    image:
+      repository: taigaio/taiga-protected
+      tag: latest
+      imagePullPolicy: IfNotPresent
+    replicas: 2
+    resources:
+    resources:
+      request:
+        memory: 100Mi
+        cpu: 10m
+      limits:
+        memory: 100Mi
+
+gateway:
+  deployment:
+    image:
+      repository: nginxinc/nginx-unprivileged
+      tag: 1.27.3-bookworm
+      imagePullPolicy: IfNotPresent
+    replicas: 2
+    resources:
+      request:
+        memory: 50Mi
+        cpu: 50m
+      limits:
+        memory: 50Mi
+
+serviceAccount: default
+
+jobAnnotations:
+
+rabbitmq:
+  events:
+    hostname: #REQUIRED
+    port: 5672
+    username: #REQUIRED
+    password: #REQUIRED
+    vhost: events
+  async:
+    hostname: #REQUIRED
+    port: 5672
+    username: #REQUIRED
+    password: #REQUIRED
+    vhost: async
+
+database:
+  host: #REQUIRED
+  db: #REQUIRED
+  user: #REQUIRED
+  password: #REQUIRED
+
+ingress:
+  enabled: true
+  hostname: #REQUIRED
+  annotations: 
+    kubernetes.io/tls-acme: "true"
+
+secrets:
+  existingSecret:
+  TAIGA_SECRET_KEY: #REQUIRED
+  TAIGA_SITES_SCHEME: https
+  WEBSOCKETS_SCHEME: wss
+  EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+  DEFAULT_FROM_EMAIL: #REQUIRED
+  EMAIL_USE_TLS: true
+  EMAIL_USE_SSL: false
+  EMAIL_HOST: #REQUIRED
+  EMAIL_PORT: #REQUIRED
+  EMAIL_HOST_USER: #REQUIRED
+  EMAIL_HOST_PASSWORD: #REQUIRED
+  ENABLE_TELEMETRY: false
+  ATTACHMENTS_MAX_AGE: 360
+
+persistence:
+  accessMode: ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName:
+  existingPvc:
+
+debug:
+  diagnoseMode:
+    async:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    backend:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    backendmigrate:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    front:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    events:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    protected:
+      enabled: false
+      command: [tail, -f, /dev/null]
+    gateway:
+      enabled: false
+      command: [tail, -f, /dev/null]

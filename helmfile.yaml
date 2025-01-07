@@ -1,0 +1,93 @@
+
+repositories:
+  - name: bitnami-registry
+    url: registry-1.docker.io/bitnamicharts
+    oci: true
+
+releases:
+  - name: rabbitmq
+    kubeContext: ebhh-test
+    namespace: test-taiga
+    chart: bitnami-registry/rabbitmq
+    version: 15.2.1
+    values:
+      - auth:
+          username: taigauser
+          password: taigapassword
+        extraSecrets:
+          load-definition:
+            load_definition.json: |
+              {
+                "users": [
+                  {
+                    "name": "{{ "{{ .Values.auth.username }}" }}",
+                    "password": "{{ "{{ .Values.auth.password }}" }}",
+                    "tags": "administrator"
+                  }
+                ],
+                "vhosts": [
+                  {
+                    "name": "events"
+                  },
+                  {
+                    "name": "async"
+                  }
+                ]
+              }
+        loadDefinition:
+          enabled: true
+          existingSecret: load-definition
+        extraConfiguration: |
+          load_definitions = /app/load_definition.json
+
+  - name: postgresql
+    kubeContext: ebhh-test
+    namespace: test-taiga
+    chart: bitnami-registry/postgresql
+    version: 16.3.4
+    values:
+      - postgresql:
+          auth:
+            password: taigapassword
+            username: taigauser
+
+  - name: taiga
+    kubeContext: ebhh-test
+    namespace: test-taiga
+    chart: ./charts/taiga
+    values:
+      - rabbitmq:
+          events:
+            hostname: rabbitmq
+            vhost: events
+            username: taigauser
+            password: taigapassword
+          async:
+            hostname: rabbitmq
+            vhost: async
+            username: taigauser
+            password: taigapassword
+        persistence:
+          storageClassName: csi-cephfs-sc
+        database:
+          host: postgresql
+          db: postgres
+          user: postgres
+          password: HmAkvgMfkJ
+        ingress:
+          hostname: taiga.ebhh-test.k8s.mmertens.metaways.me
+        secrets:
+          existingSecret:
+          TAIGA_SECRET_KEY: taiga-secret-key
+          TAIGA_SITES_SCHEME: https
+          WEBSOCKETS_SCHEME: wss
+          EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+          DEFAULT_FROM_EMAIL: REQUIRED
+          EMAIL_USE_TLS: true
+          EMAIL_USE_SSL: false
+          EMAIL_HOST: REQUIRED
+          EMAIL_PORT: REQUIRED
+          EMAIL_HOST_USER: REQUIRED
+          EMAIL_HOST_PASSWORD: REQUIRED
+          ENABLE_TELEMETRY: false
+          ATTACHMENTS_MAX_AGE: 360

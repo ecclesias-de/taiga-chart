@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "events.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "events.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  # clusterIP: None
+  ports:
+    - name: http
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector: {{- include "events.matchLabels" . | nindent 4 }}

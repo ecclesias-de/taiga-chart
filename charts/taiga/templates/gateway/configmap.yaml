@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "gateway.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "gateway.labels" . | nindent 4 }}
+data:
+  default.conf: |
+    server {
+      listen 80 default_server;
+
+      client_max_body_size 100M;
+      charset utf-8;
+
+      # Frontend
+      location / {
+        proxy_pass http://{{ include "front.basename" . }}/;
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+      }
+
+      # API
+      location /api/ {
+        proxy_pass http://{{ include "backend.basename" . }}:8000/api/;
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+      }
+
+      # Admin
+      location /admin/ {
+        proxy_pass http://{{ include "backend.basename" . }}:8000/admin/;
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+      }
+
+      # Static
+      location /static/ {
+        alias /taiga/static/;
+      }
+
+      # Media
+      location /_protected/ {
+        internal;
+        alias /taiga/media/;
+        add_header Content-disposition "attachment";
+      }
+
+      # Unprotected section
+      location /media/exports/ {
+        alias /taiga/media/exports/;
+        add_header Content-disposition "attachment";
+      }
+
+      location /media/ {
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://{{ include "protected.basename" . }}:8003/;
+        proxy_redirect off;
+      }
+    }

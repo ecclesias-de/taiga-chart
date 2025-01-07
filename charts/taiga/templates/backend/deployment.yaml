@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "backend.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "backend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.deployment.replicas }}
+  selector:
+    matchLabels: {{- include "backend.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "backend.labels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ .Values.serviceAccount }}
+
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 2000
+
+      containers:
+      - name: backend
+
+        image: {{ .Values.backend.deployment.image.repository }}:{{ .Values.backend.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.backend.deployment.image.imagePullPolicy }}
+
+        {{- if .Values.debug.diagnoseMode.backend.enabled }}
+        command: {{- toYaml .Values.debug.diagnoseMode.backend.command  | nindent 12 }}
+        {{- else }}
+        command:
+          - bash
+          - -c
+          - |
+            set -euo pipefail
+
+            echo Load default templates
+            python manage.py loaddata initial_project_templates
+
+            echo Starting Taiga API...
+            gunicorn taiga.wsgi:application \
+              --name taiga_api \
+              --bind 0.0.0.0:8000 \
+              --workers 3 \
+              --worker-tmp-dir /dev/shm \
+              --log-level=info \
+              --access-logfile - \
+              "$@"
+        {{- end}}
+
+        {{- if .Values.backend.deployment.resources }}
+        resources: {{- toYaml .Values.backend.deployment.resources | nindent 12 }}
+        {{- end }}
+
+        envFrom:
+          - secretRef:
+              name: {{ template "secret" . }}
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+        startupProbe:
+          httpGet:
+            path: /api/v1/stats/discover
+            port: 8000
+          initialDelaySeconds: 1
+          periodSeconds: 5
+
+        readinessProbe:
+          httpGet:
+            path: /api/v1/stats/discover
+            port: 8000
+          initialDelaySeconds: 1
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /api/v1/stats/discover
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+        volumeMounts:
+        - name: data
+          subPath: static
+          mountPath: /taiga-back/static
+        - name: data
+          subPath: media
+          mountPath: /taiga-back/media
+
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+            claimName: {{ template "pvc" . }}

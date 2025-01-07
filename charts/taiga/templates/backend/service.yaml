@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "backend.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "backend.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  # clusterIP: None
+  ports:
+    - name: http
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+  selector: {{- include "backend.matchLabels" . | nindent 4 }}

@@ -1,0 +1,69 @@
+{{- if .Values.backend.hooks.migrate.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "backend.basename" . }}-migrate
+  labels:
+    {{- include "backend.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-weight": "-2"
+spec:
+  template:
+    metadata:
+      name: {{ template "backend.basename" . }}-migrate
+      {{- with .Values.jobAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      restartPolicy: Never
+
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 2000
+      containers:
+        - name: backend-migrate
+
+          image: "{{ .Values.backend.deployment.image.repository }}:{{ .Values.backend.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.deployment.image.pullPolicy }}
+
+          {{- if .Values.debug.diagnoseMode.backendmigrate.enabled }}
+          command: {{- toYaml .Values.debug.diagnoseMode.backendmigrate.command  | nindent 12 }}
+          {{- else }}
+          command:
+            - bash
+            - -c
+            - |
+              set -euo pipefail
+
+              echo Executing pending migrations
+              python manage.py migrate
+          {{- end }}
+
+          {{- if .Values.backend.hooks.migrate.resources }}
+          resources: {{- toYaml .Values.backend.hooks.migrate.resources | nindent 12 }}
+          {{- end }}
+
+          envFrom:
+            - secretRef:
+                name: {{ template "secret" . }}
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+          volumeMounts:
+            - name: data
+              subPath: static
+              mountPath: /taiga-back/static
+            - name: data
+              subPath: media
+              mountPath: /taiga-back/media
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ template "pvc" . }}
+{{- end -}}

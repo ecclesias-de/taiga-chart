@@ -1,0 +1,29 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "events.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "events.labels" . | nindent 4 }}
+  {{- if .Values.ingress.annotations }}
+  annotations: {{ .Values.ingress.annotations | toYaml | nindent 4 }}
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "604800" #7d
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "604800" #7d
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.hostname }}
+      http:
+        paths:
+          - path: /events
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "events.basename" . }}
+                port:
+                  number: 8888
+  tls:
+    - hosts:
+        - {{ .Values.ingress.hostname | quote }}
+      secretName: {{ printf "%s-tls" .Values.ingress.hostname }}
+{{- end }}

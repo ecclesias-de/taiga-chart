@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "front.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "front.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.front.deployment.replicas }}
+  selector:
+    matchLabels: {{- include "front.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "front.labels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ .Values.serviceAccount }}
+      {{ include "podSecurityContext" . | nindent 6 }}
+      containers:
+      - name: front
+
+        image: {{ .Values.front.deployment.image.repository }}:{{ .Values.front.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.front.deployment.image.imagePullPolicy }}
+
+        {{- if .Values.debug.diagnoseMode.front.enabled }}
+        command: {{- toYaml .Values.debug.diagnoseMode.front.command  | nindent 12 }}
+        {{- else }}
+        # command:
+        #   - bash
+        #   - /entrypoint.sh
+        {{- end}}
+
+        {{- if .Values.front.deployment.resources }}
+        resources: {{- toYaml .Values.front.deployment.resources | nindent 12 }}
+        {{- end }}
+
+        env:
+        - name: TAIGA_SITES_SCHEME
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: TAIGA_SITES_SCHEME
+        - name: TAIGA_SITES_DOMAIN
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: TAIGA_SITES_DOMAIN
+        - name: WEBSOCKETS_SCHEME
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: WEBSOCKETS_SCHEME
+        - name: TAIGA_URL
+          value: "$(TAIGA_SITES_SCHEME)://$(TAIGA_SITES_DOMAIN)"
+        - name: TAIGA_WEBSOCKETS_URL
+          value: "$(WEBSOCKETS_SCHEME)://$(TAIGA_SITES_DOMAIN)"
+
+        {{ include "containerSecurityContext" .  | nindent 8}}
+        
+        readinessProbe:
+          httpGet:
+            path: /conf.json
+            port: 80
+          initialDelaySeconds: 1
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /conf.json
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+

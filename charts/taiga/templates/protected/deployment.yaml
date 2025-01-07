@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "protected.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "protected.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.protected.deployment.replicas }}
+  selector:
+    matchLabels: {{- include "protected.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "protected.labels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ .Values.serviceAccount }}
+
+      securityContext:
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 2000
+
+      containers:
+      - name: protected
+
+        image: {{ .Values.protected.deployment.image.repository }}:{{ .Values.protected.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.protected.deployment.image.imagePullPolicy }}
+
+        {{- if .Values.debug.diagnoseMode.protected.enabled }}
+        command: {{- toYaml .Values.debug.diagnoseMode.protected.command  | nindent 12 }}
+        {{- else }}
+        command:
+          - bash
+          - -c
+          - |
+            set -euo pipefail
+
+            echo Starting Taiga Protected
+            gunicorn server:app \
+              --name taiga_protected \
+              --bind 0.0.0.0:8003 \
+              --workers 4 \
+              --worker-tmp-dir /dev/shm \
+              --max-requests 3600 \
+              --max-requests-jitter 360 \
+              --timeout 60 \
+              --log-level=info \
+              --access-logfile - \
+              "$@"
+        {{- end}}
+
+        {{- if .Values.protected.deployment.resources }}
+        resources: {{- toYaml .Values.protected.deployment.resources | nindent 12 }}
+        {{- end }}
+
+        env:
+        - name: MAX_AGE
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: ATTACHMENTS_MAX_AGE
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: TAIGA_SECRET_KEY
+
+        securityContext:
+          allowPrivilegeEscalation: false

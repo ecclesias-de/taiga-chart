@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "events.basename" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "events.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.events.deployment.replicas }}
+  selector:
+    matchLabels: {{- include "events.matchLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "events.labels" . | nindent 8 }}
+    spec:
+      serviceAccount: {{ .Values.serviceAccount }}
+
+      securityContext:
+        runAsUser: 99
+        runAsGroup: 99
+        fsGroup: 2000
+
+      containers:
+      - name: events
+
+        image: {{ .Values.events.deployment.image.repository }}:{{ .Values.events.deployment.image.tag }}
+        imagePullPolicy: {{ .Values.events.deployment.image.imagePullPolicy }}
+
+        {{- if .Values.debug.diagnoseMode.events.enabled }}
+        command: {{- toYaml .Values.debug.diagnoseMode.events.command  | nindent 12 }}
+        {{- else }}
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+
+            envsubst < /taiga-events/docker/env.template > /taiga-events/.env
+
+            echo Starting Taiga events
+            npm run start:production
+        {{- end}}
+
+        {{- if .Values.events.deployment.resources }}
+        resources: {{- toYaml .Values.events.deployment.resources | nindent 12 }}
+        {{- end }}
+
+        env:
+        - name: TAIGA_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: TAIGA_SECRET_KEY
+        - name: RABBITMQ_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "secret" . }}
+              key: EVENTS_PUSH_BACKEND_URL
+
+        securityContext:
+          allowPrivilegeEscalation: false
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3023
+          initialDelaySeconds: 1
+          periodSeconds: 5
+
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3023
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+          

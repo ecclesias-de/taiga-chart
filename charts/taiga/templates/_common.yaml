@@ -1,0 +1,13 @@
+{{/*
+Pod SecurityContext
+*/}}
+{{- define "podSecurityContext" -}}
+securityContext: {}
+{{- end -}}
+
+{{/*
+Container SecurityContext
+*/}}
+{{- define "containerSecurityContext" -}}
+securityContext: {}
+{{- end -}}
