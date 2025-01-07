@@ -74,6 +74,7 @@ releases:
           db: postgres
           user: postgres
           password: HmAkvgMfkJ
+          sslmode: disabled
         ingress:
           hostname: taiga.ebhh-test.k8s.mmertens.metaways.me
         secrets:
