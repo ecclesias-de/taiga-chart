@@ -55,6 +55,7 @@ spec:
 
         {{ include "containerSecurityContext" .  | nindent 8}}
         
+        {{- if not .Values.debug.diagnoseMode.front.enabled }}
         readinessProbe:
           httpGet:
             path: /conf.json
@@ -68,4 +69,5 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
+        {{- end }}
 

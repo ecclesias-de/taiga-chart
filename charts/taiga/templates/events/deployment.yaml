@@ -59,6 +59,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
 
+        {{- if not .Values.debug.diagnoseMode.events.enabled }}
         readinessProbe:
           httpGet:
             path: /healthz
@@ -72,5 +73,5 @@ spec:
             port: 3023
           initialDelaySeconds: 5
           periodSeconds: 5
-
+        {{- end }}
           

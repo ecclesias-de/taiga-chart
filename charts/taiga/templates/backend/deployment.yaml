@@ -59,6 +59,7 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
 
+        {{- if not .Values.debug.diagnoseMode.backend.enabled }}
         startupProbe:
           httpGet:
             path: /api/v1/stats/discover
@@ -79,6 +80,7 @@ spec:
             port: 8000
           initialDelaySeconds: 5
           periodSeconds: 5
+        {{- end }}
 
         volumeMounts:
         - name: data
