@@ -112,7 +112,7 @@ database:
   user: #REQUIRED
   password: #REQUIRED
   userSecret:
-  connectionConfigmap: 
+  connectionConfigMap: 
   sslmode: require
 
 ingress:
