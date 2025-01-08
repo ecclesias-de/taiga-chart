@@ -18,6 +18,9 @@ spec:
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 2000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 
       containers:
       - name: async
@@ -51,6 +54,8 @@ spec:
 
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
 
         volumeMounts:
         - name: data

@@ -18,6 +18,9 @@ spec:
         runAsUser: 99
         runAsGroup: 99
         fsGroup: 2000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 
       containers:
       - name: events
@@ -58,6 +61,8 @@ spec:
 
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
 
         {{- if not .Values.debug.diagnoseMode.events.enabled }}
         readinessProbe:

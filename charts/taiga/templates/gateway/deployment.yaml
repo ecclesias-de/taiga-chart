@@ -18,6 +18,9 @@ spec:
         runAsUser: 101
         runAsGroup: 101
         fsGroup: 2000
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
 
       containers:
       - name: gateway
@@ -39,6 +42,8 @@ spec:
 
         securityContext:
           allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
 
         {{- if not .Values.debug.diagnoseMode.gateway.enabled }}
         readinessProbe:
