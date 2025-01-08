@@ -13,7 +13,9 @@ spec:
       labels: {{- include "front.labels" . | nindent 8 }}
     spec:
       serviceAccount: {{ .Values.serviceAccount }}
-      {{ include "podSecurityContext" . | nindent 6 }}
+      
+      securityContext: {}
+
       containers:
       - name: front
 
@@ -53,7 +55,7 @@ spec:
         - name: TAIGA_WEBSOCKETS_URL
           value: "$(WEBSOCKETS_SCHEME)://$(TAIGA_SITES_DOMAIN)"
 
-        {{ include "containerSecurityContext" .  | nindent 8}}
+        securityContext: {}
         
         {{- if not .Values.debug.diagnoseMode.front.enabled }}
         readinessProbe:

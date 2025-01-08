@@ -111,6 +111,8 @@ database:
   db: #REQUIRED
   user: #REQUIRED
   password: #REQUIRED
+  userSecret:
+  connectionConfigmap: 
   sslmode: require
 
 ingress:

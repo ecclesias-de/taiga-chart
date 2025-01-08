@@ -59,6 +59,9 @@ spec:
           - secretRef:
               name: {{ template "secret" . }}
 
+        env:
+          {{ include "postgresql.env" . | nindent 10 }}
+
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
