@@ -1,0 +1,4 @@
+Taiga helm chart:
+    URL: {{ .Values.secrets.TAIGA_SITES_SCHEME }}://{{ .Values.ingress.hostname}}
+    To create a super user run: kubectl exec -it -n {{ .Release.Namespace | quote }} deployment/{{ template "backend.basename" . }} -- python manage.py createsuperuser
+
