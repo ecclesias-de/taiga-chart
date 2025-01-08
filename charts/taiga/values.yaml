@@ -2,7 +2,7 @@ async:
   deployment:
     replicas: 2
     resources:
-      request:
+      requests:
         memory: 350Mi
         cpu: 50m
       limits:
@@ -16,7 +16,7 @@ backend:
       imagePullPolicy: IfNotPresent
     replicas: 2
     resources:
-      request:
+      requests:
         memory: 400Mi
         cpu: 100m
       limits:
@@ -25,7 +25,7 @@ backend:
     migrate:
       enabled: true
       resources:
-        request:
+        requests:
           memory: 1Gi
           cpu: 1
         limits:
@@ -39,7 +39,7 @@ events:
       imagePullPolicy: IfNotPresent
     replicas: 2
     resources:
-      request:
+      requests:
         memory: 100Mi
         cpu: 50m
       limits:
@@ -53,7 +53,7 @@ front:
       imagePullPolicy: IfNotPresent
     replicas: 2
     resources:
-      request:
+      requests:
         memory: 50Mi
         cpu: 50m
       limits:
@@ -68,7 +68,7 @@ protected:
     replicas: 2
     resources:
     resources:
-      request:
+      requests:
         memory: 100Mi
         cpu: 10m
       limits:
@@ -82,7 +82,7 @@ gateway:
       imagePullPolicy: IfNotPresent
     replicas: 2
     resources:
-      request:
+      requests:
         memory: 50Mi
         cpu: 50m
       limits:
