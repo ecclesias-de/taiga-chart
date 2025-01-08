@@ -3,7 +3,7 @@
 - name: POSTGRES_HOST
   valueFrom:
     secretKeyRef:
-      name: {{- .Values.database.connectionConfigMap }}
+      name: {{ .Values.database.connectionConfigMap }}
       key: HOST
 {{- else -}}
 - name: POSTGRES_HOST
@@ -21,7 +21,7 @@
 - name: POSTGRES_USER
   valueFrom:
     secretKeyRef:
-      name: {{- .Values.database.userSecret }}
+      name: {{ .Values.database.userSecret }}
       key: username
 {{- else -}}
 - name: POSTGRES_USER
@@ -34,7 +34,7 @@
 - name: POSTGRES_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{- .Values.database.userSecret }}
+      name: {{ .Values.database.userSecret }}
       key: password
 {{- else -}}
 - name: POSTGRES_PASSWORD
