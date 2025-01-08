@@ -2,7 +2,7 @@
 {{- if .Values.database.connectionConfigMap -}}
 - name: POSTGRES_HOST
   valueFrom:
-    secretKeyRef:
+    configMapKeyRef:
       name: {{ .Values.database.connectionConfigMap }}
       key: HOST
 {{- else -}}
