@@ -13,7 +13,8 @@ labels: {{ include "backend.labels" . | nindent 4 }}
 {{- define "backend.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: backend
-app.kubernetes.io/version: {{ .Values.backend.deployment.image.tag | quote }}
+app.metaways.net/software: taiga
+app.kubernetes.io/version: {{ .Values.backend.deployment.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 
 {{/*

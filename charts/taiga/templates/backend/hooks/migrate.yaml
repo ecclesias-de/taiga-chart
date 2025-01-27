@@ -27,7 +27,7 @@ spec:
       containers:
         - name: backend-migrate
 
-          image: "{{ .Values.backend.deployment.image.repository }}:{{ .Values.backend.deployment.image.tag }}"
+          image: "{{ .Values.backend.deployment.image.repository }}:{{ .Values.backend.deployment.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.backend.deployment.image.pullPolicy }}
 
           {{- if .Values.debug.diagnoseMode.backendmigrate.enabled }}

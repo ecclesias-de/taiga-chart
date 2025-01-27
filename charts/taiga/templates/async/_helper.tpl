@@ -13,7 +13,8 @@ labels: {{ include "async.labels" . | nindent 4 }}
 {{- define "async.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: async
-app.kubernetes.io/version: {{ .Values.backend.deployment.image.tag | quote }}
+app.metaways.net/software: taiga
+app.kubernetes.io/version: {{ .Values.backend.deployment.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 
 {{/*

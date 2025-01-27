@@ -13,7 +13,8 @@ labels: {{ include "protected.labels" . | nindent 4 }}
 {{- define "protected.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: protected
-app.kubernetes.io/version: {{ .Values.protected.deployment.image.tag | quote }}
+app.metaways.net/software: taiga
+app.kubernetes.io/version: {{ .Values.protected.deployment.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 
 {{/*

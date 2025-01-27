@@ -3,3 +3,4 @@ name: taiga
 description:
 type: application
 version: 0.0.0
+appVersion: 6.8.1

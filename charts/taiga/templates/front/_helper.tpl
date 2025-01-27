@@ -13,7 +13,8 @@ labels: {{ include "front.labels" . | nindent 4 }}
 {{- define "front.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: front
-app.kubernetes.io/version: {{ .Values.front.deployment.image.tag | quote }}
+app.metaways.net/software: taiga
+app.kubernetes.io/version: {{ .Values.front.deployment.image.tag | default .Chart.AppVersion }}
 {{- end -}}
 
 {{/*

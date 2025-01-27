@@ -13,6 +13,7 @@ labels: {{ include "gateway.labels" . | nindent 4 }}
 {{- define "gateway.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: gateway
+app.metaways.net/software: nginx
 app.kubernetes.io/version: {{ .Values.gateway.deployment.image.tag | quote }}
 {{- end -}}
 

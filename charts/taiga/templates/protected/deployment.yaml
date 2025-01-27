@@ -25,7 +25,7 @@ spec:
       containers:
       - name: protected
 
-        image: {{ .Values.protected.deployment.image.repository }}:{{ .Values.protected.deployment.image.tag }}
+        image: {{ .Values.protected.deployment.image.repository }}:{{ .Values.protected.deployment.image.tag | default .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.protected.deployment.image.imagePullPolicy }}
 
         {{- if .Values.debug.diagnoseMode.protected.enabled }}

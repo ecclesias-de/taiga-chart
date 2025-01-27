@@ -13,6 +13,7 @@ labels: {{ include "events.labels" . | nindent 4 }}
 {{- define "events.labels" -}}
 {{ include "labels" . }}
 app.kubernetes.io/component: events
+app.metaways.net/software: taiga-events
 app.kubernetes.io/version: {{ .Values.events.deployment.image.tag | quote }}
 {{- end -}}
 
