@@ -31,6 +31,7 @@ spec:
         {{- if .Values.debug.diagnoseMode.async.enabled }}
         command: {{- toYaml .Values.debug.diagnoseMode.async.command  | nindent 12 }}
         {{- else }}
+        # modified entry point, as the original tries to change file permissions
         command:
           - bash
           - -c
@@ -67,8 +68,14 @@ spec:
         - name: data
           subPath: media
           mountPath: /taiga-back/media
+        - name: config
+          subPath: config.py
+          mountPoint: /taiga-back/settings/config.py
 
       volumes:
       - name: data
         persistentVolumeClaim:
             claimName: {{ template "pvc" . }}
+      - name: config
+        configMap:
+          name: {{ template "backend.basename" . }}
