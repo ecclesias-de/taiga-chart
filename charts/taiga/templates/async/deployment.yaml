@@ -31,6 +31,7 @@ spec:
         {{- if .Values.debug.diagnoseMode.async.enabled }}
         command: {{- toYaml .Values.debug.diagnoseMode.async.command  | nindent 12 }}
         {{- else }}
+        # modified entry point, as the original tries to change file permissions
         command:
           - bash
           - -c

@@ -31,6 +31,9 @@ spec:
         {{- if .Values.debug.diagnoseMode.backend.enabled }}
         command: {{- toYaml .Values.debug.diagnoseMode.backend.command  | nindent 12 }}
         {{- else }}
+        # modified entry point:
+        # * as the original tries to change file permissions
+        # * to move migration to a hook
         command:
           - bash
           - -c
