@@ -62,6 +62,7 @@ protected:
     image:
       repository: taigaio/taiga-protected
       imagePullPolicy: IfNotPresent
+      tag: 6.8.2
     replicas: 2
     resources:
     resources:
