@@ -40,7 +40,8 @@ spec:
 
             echo Starting Celery...
             celery -A taiga.celery worker -B \
-              --concurrency 4 \
+              --concurrency 1 \
+              --max-tasks-per-child 10 \
               -l INFO \
               "$@"
         {{- end}}

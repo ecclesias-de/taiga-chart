@@ -3,23 +3,23 @@ async:
     replicas: 2
     resources:
       requests:
-        memory: 350Mi
+        memory: 300Mi
         cpu: 50m
       limits:
-        memory: 350Mi
+        memory: 300Mi
 
 backend:
   deployment:
     image:
       repository: taigaio/taiga-back
       imagePullPolicy: IfNotPresent
-    replicas: 2
+    replicas: 4
     resources:
       requests:
-        memory: 400Mi
-        cpu: 100m
+        memory: 200Mi
+        cpu: 50m
       limits:
-        memory: 400Mi
+        memory: 200Mi
   hooks:
     migrate:
       enabled: true
