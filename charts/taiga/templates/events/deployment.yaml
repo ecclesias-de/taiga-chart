@@ -37,8 +37,6 @@ spec:
           - |
             set -e
 
-            envsubst < /taiga-events/docker/env.template > /taiga-events/.env
-
             echo Starting Taiga events
             npm run start:production
         {{- end}}
@@ -58,6 +56,13 @@ spec:
             secretKeyRef:
               name: {{ template "secret" . }}
               key: EVENTS_PUSH_BACKEND_URL
+        - name: SECRET
+          value: $(TAIGA_SECRET_KEY)
+        - name: WEB_SOCKET_SERVER_PORT
+          value: 8888
+        - name: APP_PORT
+          value: 3023
+
 
         securityContext:
           allowPrivilegeEscalation: false
