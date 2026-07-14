@@ -77,7 +77,7 @@ gateway:
   deployment:
     image:
       repository: nginxinc/nginx-unprivileged
-      tag: 1.31.1-trixie
+      tag: 1.31.2-trixie
       imagePullPolicy: IfNotPresent
     replicas: 2
     resources:
