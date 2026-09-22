@@ -130,7 +130,7 @@ CELERY_TASK_DEFAULT_ROUTING_KEY = 'task.default'
 ##  REGISTRATION
 #########################################
 PUBLIC_REGISTER_ENABLED = os.getenv('PUBLIC_REGISTER_ENABLED', 'False') == 'True'
-
+USER_EMAIL_ALLOWED_DOMAINS = os.getenv('USER_EMAIL_ALLOWED_DOMAINS', '').split()
 
 #########################################
 ## CONTRIBS
