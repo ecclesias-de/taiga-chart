@@ -121,7 +121,7 @@ ingress:
     kubernetes.io/tls-acme: "true"
 
 secrets:
-  existingSecret:
+  # existingSecret:
   TAIGA_SECRET_KEY: #REQUIRED
   TAIGA_SITES_SCHEME: https
   WEBSOCKETS_SCHEME: wss
