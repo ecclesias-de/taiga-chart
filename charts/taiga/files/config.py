@@ -13,7 +13,7 @@ import os
 ## GENERIC
 #########################################
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
 DATABASES = {
     'default': {
@@ -27,7 +27,7 @@ DATABASES = {
             'sslmode': os.getenv('POSTGRES_SSLMODE','disable'),
             'options': os.getenv('POSTGRES_OPTIONS', ''),
         },
-        'DISABLE_SERVER_SIDE_CURSORS': os.getenv('POSTGRES_DISABLE_SERVER_SIDE_CURSORS', 'False') == 'True',
+        'DISABLE_SERVER_SIDE_CURSORS': os.getenv('POSTGRES_DISABLE_SERVER_SIDE_CURSORS', 'False').lower() == 'true',
     }
 }
 SECRET_KEY = os.getenv('TAIGA_SECRET_KEY')
@@ -46,13 +46,13 @@ LANGUAGE_CODE = os.getenv("LANGUAGE_CODE", "en-us")
 
 INSTANCE_TYPE = "D"
 
-WEBHOOKS_ENABLED = os.getenv('WEBHOOKS_ENABLED', 'True') == 'True'
-WEBHOOKS_ALLOW_PRIVATE_ADDRESS = os.getenv('WEBHOOKS_ALLOW_PRIVATE_ADDRESS', 'False') == 'True'
-WEBHOOKS_ALLOW_REDIRECTS = os.getenv('WEBHOOKS_ALLOW_REDIRECTS', 'False') == 'True'
+WEBHOOKS_ENABLED = os.getenv('WEBHOOKS_ENABLED', 'True').lower() == 'true'
+WEBHOOKS_ALLOW_PRIVATE_ADDRESS = os.getenv('WEBHOOKS_ALLOW_PRIVATE_ADDRESS', 'False').lower() == 'true'
+WEBHOOKS_ALLOW_REDIRECTS = os.getenv('WEBHOOKS_ALLOW_REDIRECTS', 'False').lower() == 'true'
 
 # Setting DEFAULT_PROJECT_SLUG_PREFIX to false
 # removes the username from project slug
-DEFAULT_PROJECT_SLUG_PREFIX = os.getenv('DEFAULT_PROJECT_SLUG_PREFIX', 'False') == 'True'
+DEFAULT_PROJECT_SLUG_PREFIX = os.getenv('DEFAULT_PROJECT_SLUG_PREFIX', 'False').lower() == 'true'
 
 #########################################
 ## MEDIA
@@ -72,8 +72,8 @@ EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.Em
 CHANGE_NOTIFICATIONS_MIN_INTERVAL = 120  # seconds
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'system@taiga.io')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
-EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False').lower() == 'true'
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False').lower() == 'true'
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
 EMAIL_PORT = os.getenv('EMAIL_PORT', 587)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'user')
@@ -83,8 +83,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'password')
 #########################################
 ## SESSION
 #########################################
-SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True') == 'True'
-CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True') == 'True'
+SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'True').lower() == 'true'
+CSRF_COOKIE_SECURE = os.getenv('CSRF_COOKIE_SECURE', 'True').lower() == 'true'
 
 
 #########################################
@@ -104,7 +104,7 @@ EVENTS_PUSH_BACKEND_OPTIONS = {
 #########################################
 ## TAIGA ASYNC
 #########################################
-CELERY_ENABLED = os.getenv('CELERY_ENABLED', 'True') == 'True'
+CELERY_ENABLED = os.getenv('CELERY_ENABLED', 'True').lower() == 'true'
 from kombu import Queue  # noqa
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
@@ -137,7 +137,7 @@ USER_EMAIL_ALLOWED_DOMAINS = os.getenv('USER_EMAIL_ALLOWED_DOMAINS', '').split()
 #########################################
 
 # SLACK
-ENABLE_SLACK = os.getenv('ENABLE_SLACK', 'False') == 'True'
+ENABLE_SLACK = os.getenv('ENABLE_SLACK', 'False').lower() == 'true'
 if ENABLE_SLACK:
     INSTALLED_APPS += [
         "taiga_contrib_slack"
@@ -146,7 +146,7 @@ if ENABLE_SLACK:
 # GITHUB AUTH
 # WARNING: If PUBLIC_REGISTER_ENABLED == False, currently Taiga by default prevents the OAuth
 # buttons to appear for both login and register
-ENABLE_GITHUB_AUTH = os.getenv('ENABLE_GITHUB_AUTH', 'False') == 'True'
+ENABLE_GITHUB_AUTH = os.getenv('ENABLE_GITHUB_AUTH', 'False').lower() == 'true'
 if PUBLIC_REGISTER_ENABLED and ENABLE_GITHUB_AUTH:
     INSTALLED_APPS += [
         "taiga_contrib_github_auth"
@@ -157,7 +157,7 @@ if PUBLIC_REGISTER_ENABLED and ENABLE_GITHUB_AUTH:
 # GITLAB AUTH
 # WARNING: If PUBLIC_REGISTER_ENABLED == False, currently Taiga by default prevents the OAuth
 # buttons to appear for both login and register
-ENABLE_GITLAB_AUTH = os.getenv('ENABLE_GITLAB_AUTH', 'False') == 'True'
+ENABLE_GITLAB_AUTH = os.getenv('ENABLE_GITLAB_AUTH', 'False').lower() == 'true'
 if PUBLIC_REGISTER_ENABLED and ENABLE_GITLAB_AUTH:
     INSTALLED_APPS += [
         "taiga_contrib_gitlab_auth"
@@ -170,13 +170,13 @@ if PUBLIC_REGISTER_ENABLED and ENABLE_GITLAB_AUTH:
 #########################################
 ## TELEMETRY
 #########################################
-ENABLE_TELEMETRY = os.getenv('ENABLE_TELEMETRY', 'True') == 'True'
+ENABLE_TELEMETRY = os.getenv('ENABLE_TELEMETRY', 'True').lower() == 'true'
 
 
 #########################################
 ##  IMPORTERS
 #########################################
-ENABLE_GITHUB_IMPORTER = os.getenv('ENABLE_GITHUB_IMPORTER', 'False') == 'True'
+ENABLE_GITHUB_IMPORTER = os.getenv('ENABLE_GITHUB_IMPORTER', 'False').lower() == 'true'
 if ENABLE_GITHUB_IMPORTER:
     IMPORTERS["github"] = {
         "active": True,
@@ -184,7 +184,7 @@ if ENABLE_GITHUB_IMPORTER:
         "client_secret": os.getenv('GITHUB_IMPORTER_CLIENT_SECRET')
     }
 
-ENABLE_JIRA_IMPORTER = os.getenv('ENABLE_JIRA_IMPORTER', 'False') == 'True'
+ENABLE_JIRA_IMPORTER = os.getenv('ENABLE_JIRA_IMPORTER', 'False').lower() == 'true'
 if ENABLE_JIRA_IMPORTER:
     IMPORTERS["jira"] = {
         "active": True,
@@ -193,7 +193,7 @@ if ENABLE_JIRA_IMPORTER:
         "pub_cert": os.getenv('JIRA_IMPORTER_PUB_CERT')
     }
 
-ENABLE_TRELLO_IMPORTER = os.getenv('ENABLE_TRELLO_IMPORTER', 'False') == 'True'
+ENABLE_TRELLO_IMPORTER = os.getenv('ENABLE_TRELLO_IMPORTER', 'False').lower().lower() == 'true'
 if ENABLE_TRELLO_IMPORTER:
     IMPORTERS["trello"] = {
         "active": True,
