@@ -34,6 +34,10 @@ spec:
         resources: {{- toYaml .Values.front.deployment.resources | nindent 12 }}
         {{- end }}
 
+        envFrom:
+          - secretRef:
+              name: {{ template "secret" . }}
+
         env:
         - name: TAIGA_SITES_SCHEME
           valueFrom:
