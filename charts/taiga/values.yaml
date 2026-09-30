@@ -135,6 +135,8 @@ secrets:
   EMAIL_HOST_PASSWORD: #REQUIRED
   ENABLE_TELEMETRY: false
   ATTACHMENTS_MAX_AGE: 360
+  # Do not allow users to create public project. Set to none for unlimited projects
+  MAX_PUBLIC_PROJECTS_PER_USER: 0
 
 persistence:
   accessMode: ReadWriteMany

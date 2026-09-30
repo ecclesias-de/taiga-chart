@@ -193,10 +193,27 @@ if ENABLE_JIRA_IMPORTER:
         "pub_cert": os.getenv('JIRA_IMPORTER_PUB_CERT')
     }
 
-ENABLE_TRELLO_IMPORTER = os.getenv('ENABLE_TRELLO_IMPORTER', 'False').lower().lower() == 'true'
+ENABLE_TRELLO_IMPORTER = os.getenv('ENABLE_TRELLO_IMPORTER', 'False').lower() == 'true'
 if ENABLE_TRELLO_IMPORTER:
     IMPORTERS["trello"] = {
         "active": True,
         "api_key": os.getenv('TRELLO_IMPORTER_API_KEY'),
         "secret_key": os.getenv('TRELLO_IMPORTER_SECRET_KEY')
     }
+
+## LIMITS
+
+# default NONE => no limit on
+# * set to 0 to disallow public project creation
+# * limits can be overwritten per user, via tha admin ui
+try:
+    MAX_PUBLIC_PROJECTS_PER_USER = int(os.getenv('MAX_PUBLIC_PROJECTS_PER_USER', 'NONE'))
+except ValueError:
+    pass
+
+# analog to MAX_PUBLIC_PROJECTS_PER_USER
+try:
+    MAX_PRIVATE_PROJECTS_PER_USER = int(os.getenv('MAX_PRIVATE_PROJECTS_PER_USER', 'NONE'))
+except ValueError:
+    pass
+
